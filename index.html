@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#33241a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icon.svg" />
+    <title>Copper</title>
+    <script type="module" crossorigin src="./assets/index-C3iAzNMQ.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-C0J4VpMc.css">
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <button class="plaque" id="btn-menu" type="button" aria-label="Menu">
+          <span id="weather" class="weather clear"></span><span id="day">Day 1</span><span class="dot"></span><span id="slot-name">Morning</span>
+        </button>
+        <div class="pips" id="pips" aria-label="Time left today"></div>
+        <nav class="screens" aria-label="Screens">
+          <button class="icon-btn screen" id="btn-sheet" type="button" aria-label="Character" title="Character"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.2"/><path d="M4.5 21c0-4.4 3.4-7.5 7.5-7.5s7.5 3.1 7.5 7.5z"/></svg></button>
+          <button class="icon-btn screen" id="btn-journal" type="button" aria-label="Journal" title="Journal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h11a2 2 0 0 1 2 2v14.5a1.5 1.5 0 0 1-1.5 1.5H6.5A2.5 2.5 0 0 1 4 18.5V5a2 2 0 0 1 2-2z"/><path d="M8 8h7M8 12h7M8 16h4" class="ink"/></svg></button>
+          <button class="icon-btn screen bag" id="btn-bag" type="button" aria-label="Bag" title="Bag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4.5h6l1 3.5H8z"/><path d="M6.5 8h11c.6 5 1.5 8 1.5 10.5a2.5 2.5 0 0 1-2.5 2.5H7.5A2.5 2.5 0 0 1 5 18.5C5 16 5.9 13 6.5 8z"/></svg></button>
+        </nav>
+        <button class="icon-btn" id="btn-mute" type="button" aria-label="Sound" aria-haspopup="dialog" aria-expanded="false"></button>
+      </header>
+
+      <section class="hud" aria-label="You">
+        <div class="purse" id="purse">
+          <div class="purse-row">
+            <span class="coins" id="coins" aria-live="polite">40c</span><span class="anchor" id="coin-anchor"></span>
+            <button class="chip pony hidden" id="btn-pony" type="button" title="Get on or off the pony (P)"></button><span class="chip rested hidden" id="rested">Rested</span><span class="chip effect hidden" id="effect"></span>
+          </div>
+          <div class="hp" aria-label="Health and belly">
+            <div class="hp-bar"><div class="hp-fill" id="hp-fill"></div></div>
+            <span class="hp-text" id="hp-text">14 / 14</span>
+            <div class="belly" id="belly" aria-label="Belly"></div>
+          </div>
+        </div>
+        <button class="stats" id="stats" type="button" aria-label="Character sheet"></button>
+      </section>
+
+      <div class="stage" id="stage">
+      <main class="town" id="town" aria-label="Town"><canvas id="scene" class="scene" role="img" aria-label="The town. Tap where you want to walk, tap a building to go in, or hold and drag to steer."></canvas>
+        <div class="hint hidden" id="hint" role="status"><span id="hint-text"></span><button class="hint-ok" id="hint-ok" type="button">Got it</button></div>
+        <div class="aim-line hidden" id="aim-line"></div>
+      </main>
+
+      <div class="sound hidden" id="sound" role="dialog" aria-label="Sound">
+        <label><span>Music</span><input type="range" min="0" max="100" step="5" data-bus="music" /><output></output></label>
+        <label><span>Ambience</span><input type="range" min="0" max="100" step="5" data-bus="ambience" /><output></output></label>
+        <label><span>Effects</span><input type="range" min="0" max="100" step="5" data-bus="effects" /><output></output></label>
+        <div class="sound-row">
+          <button class="small-btn" id="sound-mute" type="button">Mute all</button>
+          <button class="small-btn" id="sound-reset" type="button">Reset</button>
+        </div>
+      </div>
+
+      <section class="panel hidden" id="panel" role="dialog" aria-modal="false">
+        <div class="tabs hidden" id="panel-tabs" role="tablist">
+          <button type="button" role="tab" data-screen="sheet">Character</button>
+          <button type="button" role="tab" data-screen="journal">Journal</button>
+          <button type="button" role="tab" data-screen="tasks">Tasks</button>
+          <button type="button" role="tab" data-screen="bag">Bag</button>
+        </div>
+        <div class="panel-head">
+          <h2 id="panel-title"></h2>
+          <button class="icon-btn close" id="btn-close" type="button" aria-label="Back to town">&times;</button>
+        </div>
+        <p class="blurb" id="panel-blurb"></p>
+        <p class="context" id="panel-context"></p>
+        <div class="note hidden" id="panel-note" aria-live="polite"></div>
+        <div class="actions" id="panel-actions"></div>
+      </section>
+
+      <section class="panel talk hidden" id="talk" role="dialog" aria-modal="false">
+        <div class="talk-head">
+          <div class="portrait" id="talk-portrait"></div>
+          <div class="talk-who">
+            <h2 id="talk-name"></h2>
+            <p class="blurb" id="talk-title"></p>
+            <p class="talk-trait" id="talk-trait"></p>
+            <div class="regard hidden" id="talk-regard"></div>
+          </div>
+          <button class="icon-btn close" id="btn-talk-close" type="button" aria-label="Walk away">&times;</button>
+        </div>
+        <p class="speech" id="talk-line"></p>
+        <div class="note hidden" id="talk-note" aria-live="polite"></div>
+        <div class="gifts hidden" id="talk-gifts"></div>
+        <div class="actions" id="talk-actions"></div>
+      </section>
+      </div>
+
+      <div class="overlay journey hidden" id="journey" role="dialog" aria-modal="true" aria-label="A journey">
+        <div class="journey-box">
+          <canvas class="journey-scene" id="journey-scene" aria-hidden="true"></canvas>
+          <div class="journey-strip" id="journey-strip"></div>
+          <div class="journey-status" id="journey-status"></div>
+          <div class="journey-body">
+            <p class="kicker" id="journey-kicker"></p>
+            <h2 id="journey-title"></h2>
+            <p class="journey-text" id="journey-text"></p>
+            <div class="journey-outcome hidden" id="journey-outcome" aria-live="polite"></div>
+            <div class="act-chips" id="journey-chips"></div>
+            <div class="actions" id="journey-buttons"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="overlay arena hidden" id="fight" role="dialog" aria-modal="true" aria-label="A fight">
+        <div class="arena-box">
+          <div class="arena-scene" id="arena-scene">
+            <div class="plate foe-plate">
+              <span class="plate-name" id="fight-name"></span><span class="plate-level" id="fight-level"></span>
+              <span class="plate-tag hidden" id="arena-foe-tag"></span>
+              <div class="bar enemy"><div class="bar-fill" id="fight-enemy-hp"></div></div>
+              <span class="plate-hp" id="fight-enemy-text"></span>
+            </div>
+            <div class="plate you-plate">
+              <span class="plate-name" id="arena-you-name">You</span><span class="plate-tag hidden" id="arena-you-tag"></span>
+              <div class="bar you"><div class="bar-fill" id="fight-your-hp"></div></div>
+              <span class="plate-hp" id="fight-your-text"></span>
+            </div>
+            <div class="fighter foe" id="arena-foe"><div class="fighter-shadow"></div><div class="fighter-art" id="arena-foe-art"></div></div>
+            <div class="fighter you" id="arena-you"><div class="fighter-shadow"></div><div class="fighter-art" id="arena-you-art"></div></div>
+          </div>
+          <div class="arena-log" id="fight-log" aria-live="polite"></div>
+          <p class="arena-odds" id="fight-odds"></p>
+          <div class="actions fight-actions" id="fight-moves"></div>
+          <div class="actions fight-actions">
+            <button class="action sleep hidden" id="btn-fight-done" type="button"><span class="action-label">Carry on</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="overlay confirm hidden" id="retire-confirm" role="dialog" aria-modal="true" aria-label="End this life">
+        <div class="sheet confirm-sheet">
+          <p class="kicker">This cannot be undone</p>
+          <h2>Retire, and end this life?</h2>
+          <p class="line" id="retire-what"></p>
+          <p class="line">Nothing more can be done in this life after this. It goes into the hall as it stands.</p>
+          <label class="field-label" for="retire-word">Type RETIRE to go through with it</label>
+          <input class="confirm-input" id="retire-word" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" />
+          <div class="confirm-buttons">
+            <button class="big-btn quiet" id="retire-no" type="button">Not yet</button>
+            <button class="big-btn danger" id="retire-yes" type="button" disabled>End this life</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="overlay raised hidden" id="raised" role="dialog" aria-modal="true" aria-label="It stands">
+        <div class="sheet raised-sheet">
+          <p class="kicker" id="raised-kicker"></p>
+          <h2 id="raised-title"></h2>
+          <div class="raised-stage" id="raised-stage"></div>
+          <div class="raised-lines" id="raised-lines"></div>
+          <div class="raised-gives" id="raised-gives"></div>
+          <p class="raised-stone" id="raised-stone"></p>
+          <button class="big-btn" id="raised-ok" type="button">Go and look at it</button>
+        </div>
+      </div>
+
+      <div class="overlay desk hidden" id="desk" role="dialog" aria-modal="true" aria-label="The guild desk">
+        <div class="desk-box">
+          <div class="desk-ledgers" aria-label="The four ledgers"></div>
+          <p class="kicker desk-kicker"></p>
+          <div class="desk-card">
+            <div class="desk-who">
+              <div class="portrait desk-face"></div>
+              <div>
+                <h2 class="desk-name"></h2>
+                <p class="blurb desk-title"></p>
+              </div>
+            </div>
+            <p class="speech desk-text"></p>
+            <p class="desk-because hidden"></p>
+            <span class="desk-ink" aria-hidden="true"></span>
+          </div>
+          <div class="desk-outcome hidden" aria-live="polite"></div>
+          <div class="actions desk-buttons"></div>
+        </div>
+      </div>
+
+      <div class="overlay activity hidden" id="activity" role="dialog" aria-modal="true" aria-label="Doing something">
+        <div class="act-card">
+          <div class="act-stage" id="act-stage"></div>
+          <div class="act-body">
+            <h3 id="act-title"></h3>
+            <p class="act-flavor" id="act-flavor"></p>
+            <div class="act-bar" id="act-bar"><div id="act-fill"></div></div>
+            <div class="act-result hidden" id="act-result" aria-live="polite">
+              <p id="act-text"></p>
+              <div class="act-chips" id="act-chips"></div>
+              <button class="big-btn" id="act-done" type="button">Carry on</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="overlay hidden" id="create" role="dialog" aria-modal="true" aria-label="A new life">
+        <div class="sheet create-sheet">
+          <p class="kicker">A new life</p>
+          <div class="create-top">
+            <div class="preview" id="create-preview"></div>
+            <div class="create-who">
+              <label class="field-label" for="create-name-input">Name</label>
+              <div class="name-row"><input id="create-name-input" type="text" maxlength="16" autocomplete="off" spellcheck="false" /><button class="small-btn" id="create-roll" type="button">Roll</button></div>
+              <div class="look-rows" id="create-look"></div>
+            </div>
+          </div>
+          <p class="field-label">Where you come from</p>
+          <div class="backgrounds" id="create-backgrounds"></div>
+          <div class="create-actions">
+            <button class="big-btn secondary" id="create-back" type="button">Back</button>
+            <button class="big-btn" id="create-begin" type="button">Begin</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="overlay hidden" id="day-overlay">
+        <div class="sheet">
+          <p class="kicker" id="day-kicker">Night falls</p>
+          <h1 class="big" id="day-big">Day 2</h1>
+          <p class="line" id="day-line"></p>
+          <div class="aims" id="day-aims"></div>
+          <button class="big-btn" id="btn-wake" type="button">Get up</button>
+        </div>
+      </div>
+
+      <div class="overlay hidden" id="end">
+        <div class="sheet end-sheet">
+          <p class="kicker">A life, ended</p>
+          <h1 class="big" id="end-title">Townie</h1>
+          <p class="line" id="end-line"></p>
+          <div class="aims" id="end-score"></div>
+          <button class="big-btn" id="btn-end-done" type="button">Into the hall</button>
+        </div>
+      </div>
+
+      <div class="overlay" id="title">
+        <div class="sheet title-sheet">
+          <p class="kicker">A fantasy life, from below</p>
+          <h1 class="title">Copper</h1>
+          <p class="tagline">You are not the hero. You are the townie who sells the hero fish.</p>
+          <p class="how" id="title-how">You arrive with five copper and no bed. Work, fish, dig, fight. Get a room, then a trade, then a house. Every number you see can go up, and every comfort has a better one above it.</p>
+          <button class="big-btn" id="btn-continue" type="button">Continue</button>
+          <div class="lives hidden" id="lives" aria-label="Your lives"></div>
+          <button class="big-btn secondary" id="btn-new" type="button">Start a life</button>
+          <div class="file-row">
+            <button class="big-btn secondary small" id="btn-export" type="button">Save all to a file</button>
+            <button class="big-btn secondary small" id="btn-import" type="button">Load from a file</button>
+            <input class="hidden" id="file-import" type="file" accept="application/json,.json" />
+          </div>
+          <p class="file-note hidden" id="file-note" role="status"></p>
+          <div class="hall" id="hall"></div>
+          <div class="file-row">
+            <button class="big-btn secondary small" id="btn-help" type="button">How to play</button>
+            <button class="big-btn secondary small" id="btn-title-sound" type="button">Sound</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="overlay hidden" id="help">
+        <div class="sheet help-sheet">
+          <p class="kicker">How to play</p>
+          <h2 class="help-title">Copper</h2>
+          <div class="help-body">
+            <p><b>Move.</b> Tap the ground to walk there. Hold and drag anywhere to steer. On a keyboard, arrow keys or WASD.</p>
+            <p><b>Do things.</b> Tap a building to go in. Tap a person to talk. Tap a creature to fight it. Every line in a panel says what it does before you do it.</p>
+            <p><b>Time.</b> A day is four slots: morning, afternoon, evening, night. Most things take one. Buying, selling and eating take none. Sleep ends the day.</p>
+            <p><b>Sleep.</b> Where you sleep decides your morning. Free places leave you stiff, chilled or ragged. A room makes your first action count double. Better beds do more.</p>
+            <p><b>Numbers.</b> Brawn, Wits, Charm go up by doing. Fishing and Mining go up while the spot is orange or yellow. Money goes copper, silver, gold.</p>
+            <p><b>The point.</b> Come from nothing. Get a bed, then a trade, then a house. The aims line at the bottom of the town always says what is worth doing next.</p>
+          </div>
+          <button class="big-btn" id="btn-help-done" type="button">Back</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
