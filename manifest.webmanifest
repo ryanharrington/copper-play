@@ -1,0 +1,12 @@
+{
+  "name": "Copper",
+  "short_name": "Copper",
+  "description": "A fantasy life sim. You are not the hero. You are the townie who sells the hero fish.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#33241a",
+  "theme_color": "#33241a",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
